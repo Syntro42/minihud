@@ -3,7 +3,12 @@
 bin/
 build/
 eclipse/
+.idea/
+run/
 logs/
 .classpath
 .project
 build.number
+*.iml
+*.ipr
+*.iws
