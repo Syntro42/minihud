@@ -79,6 +79,7 @@ public class WorldLoadListener implements IWorldLoadListener
             }
 
             DataStorage.getInstance().onWorldJoin();
+            DataStorage.getInstance().onWorldLoad(worldAfter);
         }
     }
 

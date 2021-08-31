@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import fi.dy.masa.minihud.renderer.OverlayRendererBeaconRange;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -108,6 +109,7 @@ public class DataStorage
         StructurePacketHandlerServux.INSTANCE.reset();
         ShapeManager.INSTANCE.clear();
         OverlayRendererLightLevel.reset();
+        OverlayRendererBeaconRange.clear();
 
         if (isLogout)
         {
@@ -131,6 +133,11 @@ public class DataStorage
         {
             this.shouldRegisterStructureChannel = true;
         }
+    }
+
+    public void onWorldLoad(World world)
+    {
+        OverlayRendererBeaconRange.setNeedsUpdate();
     }
 
     public void setWorldSeed(long seed)

@@ -9,6 +9,7 @@
         "IMixinServerWorld",
         "IMixinWorldRenderer",
         "MixinAbstractRedstoneGateBlock",
+        "MixinBeaconBlockEntity",
         "MixinBlockOutlineDebugRenderer",
         "MixinClientPlayerInteractionManager",
         "MixinClientPlayNetworkHandler",
