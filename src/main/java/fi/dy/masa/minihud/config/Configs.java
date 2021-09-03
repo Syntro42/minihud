@@ -151,6 +151,10 @@ public class Configs implements IConfigHandler
 
     public static class Colors
     {
+        public static final ConfigColor BEACON_RANGE_LVL1_OVERLAY_COLOR         = new ConfigColor("beaconRangeLvl1",                    "#20E060FF", "Color for the level 1 beacon overlay");
+        public static final ConfigColor BEACON_RANGE_LVL2_OVERLAY_COLOR         = new ConfigColor("beaconRangeLvl2",                    "#20FFB040", "Color for the level 2 beacon overlay");
+        public static final ConfigColor BEACON_RANGE_LVL3_OVERLAY_COLOR         = new ConfigColor("beaconRangeLvl3",                    "#20FFF040", "Color for the level 3 beacon overlay");
+        public static final ConfigColor BEACON_RANGE_LVL4_OVERLAY_COLOR         = new ConfigColor("beaconRangeLvl4",                    "#2060FF40", "Color for the level 4 beacon overlay");
         public static final ConfigColor BLOCK_GRID_OVERLAY_COLOR                = new ConfigColor("blockGridOverlayColor",              "#80FFFFFF", "Color for the block grid overlay");
         public static final ConfigColor LIGHT_LEVEL_MARKER_DARK                 = new ConfigColor("lightLevelMarkerDark",               "#FFFF4848", "The color for the spawnable spots marker");
         public static final ConfigColor LIGHT_LEVEL_MARKER_LIT                  = new ConfigColor("lightLevelMarkerLit",                "#FFFFFF33", "The color for the safe (during day) spots marker");
@@ -178,6 +182,10 @@ public class Configs implements IConfigHandler
         public static final ConfigColor TEXT_COLOR                              = new ConfigColor("textColor",                          "#FFE0E0E0", "Info line text color");
 
         public static final ImmutableList<IConfigValue> OPTIONS = ImmutableList.of(
+                BEACON_RANGE_LVL1_OVERLAY_COLOR,
+                BEACON_RANGE_LVL2_OVERLAY_COLOR,
+                BEACON_RANGE_LVL3_OVERLAY_COLOR,
+                BEACON_RANGE_LVL4_OVERLAY_COLOR,
                 BLOCK_GRID_OVERLAY_COLOR,
                 LIGHT_LEVEL_MARKER_DARK,
                 LIGHT_LEVEL_MARKER_LIT,
