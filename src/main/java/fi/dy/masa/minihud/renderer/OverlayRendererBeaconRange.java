@@ -261,12 +261,12 @@ public class OverlayRendererBeaconRange extends OverlayRendererBase
         double maxZ = z + range + 1;
         Color4f color = getColorForLevel(level);
 
-        GlStateManager._disableTexture();
-        GlStateManager._disableCull();
-        GlStateManager._enableDepthTest();
-        GlStateManager._depthMask(false);
-        GlStateManager._polygonOffset(-3f, -3f);
-        GlStateManager._enablePolygonOffset();
+        RenderSystem.disableTexture();
+        RenderSystem.disableCull();
+        RenderSystem.enableDepthTest();
+        RenderSystem.depthMask(false);
+        RenderSystem.polygonOffset(-3f, -3f);
+        RenderSystem.enablePolygonOffset();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         fi.dy.masa.malilib.render.RenderUtils.setupBlend();
         fi.dy.masa.malilib.render.RenderUtils.color(1f, 1f, 1f, 1f);
