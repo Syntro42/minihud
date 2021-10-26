@@ -21,6 +21,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.integrated.IntegratedServer;
@@ -576,6 +577,48 @@ public class RenderHandler implements IRenderer
                 this.addLine("Honey: " + GuiBase.TXT_AQUA + BeehiveBlockEntity.getHoneyLevel(state));
             }
         }
+        else if (type == InfoToggle.HORSE_SPEED ||
+                 type == InfoToggle.HORSE_JUMP)
+        {
+            if (this.addedTypes.contains(InfoToggle.HORSE_SPEED) ||
+                this.addedTypes.contains(InfoToggle.HORSE_JUMP))
+            {
+                return;
+            }
+
+            Entity vehicle = this.mc.player.getVehicle();
+
+            if ((vehicle instanceof HorseBaseEntity) == false)
+            {
+                return;
+            }
+
+            HorseBaseEntity horse = (HorseBaseEntity) vehicle;
+
+            if (horse.isSaddled())
+            {
+                if (InfoToggle.HORSE_SPEED.getBooleanValue())
+                {
+                    float speed = horse.getMovementSpeed();
+                    speed *= 42.163f;
+                    this.addLine(String.format("Horse Speed: %.3f m/s", speed));
+                }
+
+                if (InfoToggle.HORSE_JUMP.getBooleanValue())
+                {
+                    double jump = horse.getJumpStrength();
+                    double calculatedJumpHeight =
+                            -0.1817584952d * jump * jump * jump +
+                            3.689713992d * jump * jump +
+                            2.128599134d * jump +
+                            -0.343930367;
+                    this.addLine(String.format("Horse Jump: %.3f m", calculatedJumpHeight));
+                }
+
+                this.addedTypes.add(InfoToggle.HORSE_SPEED);
+                this.addedTypes.add(InfoToggle.HORSE_JUMP);
+            }
+        }
         else if (type == InfoToggle.ROTATION_YAW ||
                  type == InfoToggle.ROTATION_PITCH ||
                  type == InfoToggle.SPEED)
@@ -617,6 +660,13 @@ public class RenderHandler implements IRenderer
             this.addedTypes.add(InfoToggle.ROTATION_YAW);
             this.addedTypes.add(InfoToggle.ROTATION_PITCH);
             this.addedTypes.add(InfoToggle.SPEED);
+        }
+        else if (type == InfoToggle.SPEED_HV)
+        {
+            double dx = entity.getX() - entity.lastRenderX;
+            double dy = entity.getY() - entity.lastRenderY;
+            double dz = entity.getZ() - entity.lastRenderZ;
+            this.addLine(String.format("speed: xz: %.3f y: %.3f m/s", Math.sqrt(dx * dx + dz * dz) * 20, dy * 20));
         }
         else if (type == InfoToggle.SPEED_AXIS)
         {

@@ -1,9 +1,9 @@
 package fi.dy.masa.minihud.util;
 
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
+import io.netty.buffer.Unpooled;
 import com.google.common.collect.MapMaker;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
@@ -27,12 +27,11 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.TypeFilter;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
+import fi.dy.masa.malilib.config.IConfigBoolean;
 import fi.dy.masa.minihud.config.Configs;
 import fi.dy.masa.minihud.config.RendererToggle;
 import fi.dy.masa.minihud.mixin.IMixinEntityNavigation;
-import io.netty.buffer.Unpooled;
 
 public class DebugInfoUtils
 {
@@ -133,19 +132,14 @@ public class DebugInfoUtils
         }
     }
 
-    public static void onNeighborNotify(World world, BlockPos pos, EnumSet<Direction> notifiedSides)
+    public static void onNeighborUpdate(World world, BlockPos pos)
     {
         // This will only work in single player...
         // We are catching updates from the server world, and adding them to the debug renderer directly
         if (neighborUpdateEnabled && world.isClient == false)
         {
-            final long time = world.getTime();
-
             MinecraftClient.getInstance().execute(() -> {
-                for (Direction side : notifiedSides)
-                {
-                    ((NeighborUpdateDebugRenderer) MinecraftClient.getInstance().debugRenderer.neighborUpdateDebugRenderer).addNeighborUpdate(time, pos.offset(side));
-                }
+                ((NeighborUpdateDebugRenderer) MinecraftClient.getInstance().debugRenderer.neighborUpdateDebugRenderer).addNeighborUpdate(world.getTime(), pos);
             });
         }
     }
@@ -223,7 +217,7 @@ public class DebugInfoUtils
         return false;
     }
 
-    public static void toggleDebugRenderer(RendererToggle config)
+    public static void toggleDebugRenderer(IConfigBoolean config)
     {
         if (config == RendererToggle.DEBUG_NEIGHBOR_UPDATES)
         {
