@@ -1,20 +1,28 @@
 package fi.dy.masa.minihud.util;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import javax.annotation.Nullable;
+import net.minecraft.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.entity.passive.AxolotlEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.recipe.AbstractCookingRecipe;
+import net.minecraft.recipe.Recipe;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import fi.dy.masa.malilib.util.Constants;
 import fi.dy.masa.malilib.util.IntBoundingBox;
+import fi.dy.masa.minihud.mixin.IMixinAbstractFurnaceBlockEntity;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 public class MiscUtils
 {
@@ -122,31 +130,30 @@ public class MiscUtils
 
     public static void addBeeTooltip(ItemStack stack, List<Text> lines)
     {
-        NbtCompound tag = stack.getNbt();
+        NbtCompound stackTag = stack.getNbt();
 
-        if (tag != null && tag.contains("BlockEntityTag", Constants.NBT.TAG_COMPOUND))
+        if (stackTag != null && stackTag.contains("BlockEntityTag", Constants.NBT.TAG_COMPOUND))
         {
-            tag = tag.getCompound("BlockEntityTag");
-            NbtList bees = tag.getList("Bees", Constants.NBT.TAG_COMPOUND);
+            NbtCompound beTag = stackTag.getCompound("BlockEntityTag");
+            NbtList bees = beTag.getList("Bees", Constants.NBT.TAG_COMPOUND);
             int count = bees.size();
             int babyCount = 0;
 
             for (int i = 0; i < count; i++)
             {
-                tag = bees.getCompound(i).getCompound("EntityData");
+                NbtCompound beeTag = bees.getCompound(i);
+                NbtCompound entityDataTag = beeTag.getCompound("EntityData");
 
-                if (tag != null)
+                if (entityDataTag.contains("CustomName", Constants.NBT.TAG_STRING))
                 {
-                    if (tag.contains("CustomName", Constants.NBT.TAG_STRING))
-                    {
-                        String beeName = tag.getString("CustomName");
-                        lines.add(Math.min(1, lines.size()), new TranslatableText("minihud.label.bee_tooltip.name", Text.Serializer.fromJson(beeName).getString()));
-                    }
+                    String beeName = entityDataTag.getString("CustomName");
+                    lines.add(Math.min(1, lines.size()), new TranslatableText("minihud.label.bee_tooltip.name", Text.Serializer.fromJson(beeName).getString()));
+                }
 
-                    if (tag.contains("Age", Constants.NBT.TAG_INT) && tag.getInt("Age") < 0)
-                    {
-                        ++babyCount;
-                    }
+                if (entityDataTag.contains("Age", Constants.NBT.TAG_INT) &&
+                    entityDataTag.getInt("Age") + beeTag.getInt("TickInHive") < 0)
+                {
+                    ++babyCount;
                 }
             }
 
@@ -185,5 +192,24 @@ public class MiscUtils
 
             lines.add(Math.min(1, lines.size()), new TranslatableText("minihud.label.honey_info.level", honeyLevel));
         }
+    }
+
+    public static int getFurnaceXpAmount(AbstractFurnaceBlockEntity be)
+    {
+        Object2IntOpenHashMap<Identifier> recipes = ((IMixinAbstractFurnaceBlockEntity) be).minihud_getUsedRecipes();
+        World world = be.getWorld();
+        double xp = 0.0;
+
+        for (Object2IntMap.Entry<Identifier> entry : recipes.object2IntEntrySet())
+        {
+            Optional<? extends Recipe<?>> recipeOpt = world.getRecipeManager().get(entry.getKey());
+
+            if (recipeOpt.isPresent() && recipeOpt.get() instanceof AbstractCookingRecipe recipe)
+            {
+                xp += entry.getIntValue() * recipe.getExperience();
+            }
+        }
+
+        return (int) xp;
     }
 }

@@ -13,6 +13,7 @@ import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
 import net.minecraft.block.BeehiveBlock;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.block.entity.BeehiveBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
@@ -280,7 +281,7 @@ public class RenderHandler implements IRenderer
         MinecraftClient mc = this.mc;
         Entity entity = mc.getCameraEntity();
         World world = entity.getEntityWorld();
-        double y = entity.getBoundingBox().minY;
+        double y = entity.getY();
         BlockPos pos = new BlockPos(entity.getX(), y, entity.getZ());
         ChunkPos chunkPos = new ChunkPos(pos);
 
@@ -415,16 +416,22 @@ public class RenderHandler implements IRenderer
             }
         }
         else if (type == InfoToggle.COORDINATES ||
+                 type == InfoToggle.COORDINATES_SCALED ||
                  type == InfoToggle.DIMENSION)
         {
             // Don't add the same line multiple times
-            if (this.addedTypes.contains(InfoToggle.COORDINATES) || this.addedTypes.contains(InfoToggle.DIMENSION))
+            if (this.addedTypes.contains(InfoToggle.COORDINATES) ||
+                this.addedTypes.contains(InfoToggle.COORDINATES_SCALED) ||
+                this.addedTypes.contains(InfoToggle.DIMENSION))
             {
                 return;
             }
 
             String pre = "";
             StringBuilder str = new StringBuilder(128);
+            String fmtStr = Configs.Generic.COORDINATE_FORMAT_STRING.getStringValue();
+            double x = entity.getX();
+            double z = entity.getZ();
 
             if (InfoToggle.COORDINATES.getBooleanValue())
             {
@@ -432,8 +439,7 @@ public class RenderHandler implements IRenderer
                 {
                     try
                     {
-                        str.append(String.format(Configs.Generic.COORDINATE_FORMAT_STRING.getStringValue(),
-                            entity.getX(), y, entity.getZ()));
+                        str.append(String.format(fmtStr, x, y, z));
                     }
                     // Uh oh, someone done goofed their format string... :P
                     catch (Exception e)
@@ -443,8 +449,46 @@ public class RenderHandler implements IRenderer
                 }
                 else
                 {
-                    str.append(String.format("XYZ: %.2f / %.4f / %.2f",
-                        entity.getX(), y, entity.getZ()));
+                    str.append(String.format("XYZ: %.2f / %.4f / %.2f", x, y, z));
+                }
+
+                pre = " / ";
+            }
+
+            if (InfoToggle.COORDINATES_SCALED.getBooleanValue() &&
+                (world.getRegistryKey() == World.NETHER || world.getRegistryKey() == World.OVERWORLD))
+            {
+                boolean isNether = world.getRegistryKey() == World.NETHER;
+                double scale = isNether ? 8.0 : 1.0 / 8.0;
+                x *= scale;
+                z *= scale;
+
+                str.append(pre);
+
+                if (isNether)
+                {
+                    str.append("Overworld: ");
+                }
+                else
+                {
+                    str.append("Nether: ");
+                }
+
+                if (Configs.Generic.USE_CUSTOMIZED_COORDINATES.getBooleanValue())
+                {
+                    try
+                    {
+                        str.append(String.format(fmtStr, x, y, z));
+                    }
+                    // Uh oh, someone done goofed their format string... :P
+                    catch (Exception e)
+                    {
+                        str.append("broken coordinate format string!");
+                    }
+                }
+                else
+                {
+                    str.append(String.format("XYZ: %.2f / %.4f / %.2f", x, y, z));
                 }
 
                 pre = " / ";
@@ -453,12 +497,13 @@ public class RenderHandler implements IRenderer
             if (InfoToggle.DIMENSION.getBooleanValue())
             {
                 String dimName = world.getRegistryKey().getValue().toString();
-                str.append(String.format(String.format("%sdim: %s", pre, dimName)));
+                str.append(pre).append("dim: ").append(dimName);
             }
 
             this.addLine(str.toString());
 
             this.addedTypes.add(InfoToggle.COORDINATES);
+            this.addedTypes.add(InfoToggle.COORDINATES_SCALED);
             this.addedTypes.add(InfoToggle.DIMENSION);
         }
         else if (type == InfoToggle.BLOCK_POS ||
@@ -566,6 +611,16 @@ public class RenderHandler implements IRenderer
             if (be instanceof BeehiveBlockEntity)
             {
                 this.addLine("Bees: " + GuiBase.TXT_AQUA + ((BeehiveBlockEntity) be).getBeeCount());
+            }
+        }
+        else if (type == InfoToggle.FURNACE_XP)
+        {
+            World bestWorld = WorldUtils.getBestWorld(mc);
+            BlockEntity be = this.getTargetedBlockEntity(bestWorld, mc);
+
+            if (be instanceof AbstractFurnaceBlockEntity furnace)
+            {
+                this.addLine("Furnace XP: " + GuiBase.TXT_AQUA + MiscUtils.getFurnaceXpAmount(furnace));
             }
         }
         else if (type == InfoToggle.HONEY_LEVEL)

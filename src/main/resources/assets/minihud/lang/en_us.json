@@ -3,11 +3,8 @@
 
     "minihud.gui.button.config_gui.colors": "Colors",
     "minihud.gui.button.config_gui.generic": "Generic",
-    "minihud.gui.button.config_gui.info_toggles": "Info Toggles",
-    "minihud.gui.button.config_gui.info_line_order": "Info Line Order",
-    "minihud.gui.button.config_gui.info_hotkeys": "Info Hotkeys",
-    "minihud.gui.button.config_gui.renderer_toggles": "Renderer Toggles",
-    "minihud.gui.button.config_gui.renderer_hotkeys": "Renderer Hotkeys",
+    "minihud.gui.button.config_gui.info_lines": "Info Lines",
+    "minihud.gui.button.config_gui.renderers": "Renderers",
     "minihud.gui.button.config_gui.shapes": "Shapes",
     "minihud.gui.button.config_gui.structures": "Structures",
 
@@ -15,6 +12,7 @@
     "minihud.gui.button.configure": "Configure",
     "minihud.gui.button.remove": "Remove",
     "minihud.gui.button.shape_entry.enabled": "Enabled: %s",
+    "minihud.gui.button.shape_renderer_toggle": "Shape Renderer: %s",
 
     "minihud.gui.label.block_snap": "Block snap: %s",
     "minihud.gui.label.center_colon": "Center:",
@@ -100,6 +98,8 @@
     "minihud.message.error.shapes.select_shape_from_dropdown": "Select the Shape type to create from the dropdown widget",
 
     "minihud.message.distance_reference_point_set": "Set distance reference point to %s",
+    "minihud.message.no_seed": "MiniHUD: World seed is not known",
+    "minihud.message.seed_is": "The world seed in MiniHUD is currently set to '%s'",
     "minihud.message.seed_set": "MiniHUD: Set the world seed to '%s'",
     "minihud.message.spawn_set": "MiniHUD: Set the world spawn to %s"
 }
