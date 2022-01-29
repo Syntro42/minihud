@@ -283,10 +283,10 @@ public class OverlayRendererBeaconRange extends OverlayRendererBase
 
         tessellator.draw();
 
-        GlStateManager._polygonOffset(0f, 0f);
-        GlStateManager._disablePolygonOffset();
-        GlStateManager._enableCull();
-        GlStateManager._enableTexture();
-        GlStateManager._disableBlend();
+        RenderSystem.polygonOffset(0f, 0f);
+        RenderSystem.disablePolygonOffset();
+        RenderSystem.enableCull();
+        RenderSystem.enableTexture();
+        RenderSystem.disableBlend();
     }
 }
